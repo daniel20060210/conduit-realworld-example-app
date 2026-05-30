@@ -3,7 +3,7 @@ import ArticleMeta from "../ArticleMeta";
 import ArticleTags from "../ArticleTags";
 import FavButton from "../FavButton";
 
-function ArticlesPreview({ articles, loading, updateArticles }) {
+function ArticlesPreview({ articles, loading, updateArticles, readMoreText = "Read more..." }) {
   const handleFav = (article) => {
     const items = [...articles];
 
@@ -34,7 +34,7 @@ function ArticlesPreview({ articles, loading, updateArticles }) {
           >
             <h1>{article.title}</h1>
             <p>{article.description}</p>
-            <span>Read more...</span>
+            <span>{readMoreText}</span>
             <ArticleTags tagList={article.tagList} />
           </Link>
         </div>

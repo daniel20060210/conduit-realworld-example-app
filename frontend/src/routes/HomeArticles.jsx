@@ -22,6 +22,7 @@ function HomeArticles() {
         articles={articles}
         loading={loading}
         updateArticles={setArticlesData}
+        readMoreText="查看详情"
       />
 
       <ArticlesPagination
