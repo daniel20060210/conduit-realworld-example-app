@@ -34,7 +34,7 @@ function ArticlesPreview({ articles, loading, updateArticles }) {
           >
             <h1>{article.title}</h1>
             <p>{article.description}</p>
-            <span>Read more...</span>
+            <span>查看详情</span>
             <ArticleTags tagList={article.tagList} />
           </Link>
         </div>
