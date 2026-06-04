@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import dateFormatter from "../../helpers/dateFormatter";
 import deleteComment from "../../services/deleteComment";
 import getComments from "../../services/getComments";
+import toggleCommentLike from "../../services/toggleCommentLike";
 import CommentAuthor from "./CommentAuthor";
 
 function CommentList({ triggerUpdate, updateComments }) {
@@ -12,8 +13,8 @@ function CommentList({ triggerUpdate, updateComments }) {
   const { slug } = useParams();
 
   useEffect(() => {
-    getComments({ slug }).then(setComments).catch(console.error);
-  }, [slug, triggerUpdate]);
+    getComments({ slug, headers }).then(setComments).catch(console.error);
+  }, [slug, triggerUpdate, headers]);
 
   const handleClick = (commentId) => {
     if (!isAuth) alert("You need to login first");
@@ -26,8 +27,34 @@ function CommentList({ triggerUpdate, updateComments }) {
       .catch(console.error);
   };
 
+  const handleLike = (comment) => {
+    if (!isAuth) return alert("You need to login first");
+
+    const { id: commentId, liked, likeCount } = comment;
+
+    // Optimistic update
+    setComments((prev) =>
+      prev.map((c) =>
+        c.id === commentId
+          ? {
+              ...c,
+              liked: !liked,
+              likeCount: liked ? likeCount - 1 : likeCount + 1,
+            }
+          : c,
+      ),
+    );
+
+    toggleCommentLike({ commentId, liked, slug, headers }).catch((error) => {
+      console.error(error);
+      // Revert on failure
+      getComments({ slug, headers }).then(setComments).catch(console.error);
+    });
+  };
+
   return comments?.length > 0 ? (
-    comments.map(({ author, author: { username }, body, createdAt, id }) => {
+    comments.map((comment) => {
+      const { author, author: { username }, body, createdAt, id, liked, likeCount } = comment;
       return (
         <div className="card" key={id}>
           <div className="card-block">
@@ -36,6 +63,14 @@ function CommentList({ triggerUpdate, updateComments }) {
           <div className="card-footer">
             <CommentAuthor {...author} />
             <span className="date-posted">{dateFormatter(createdAt)}</span>
+            {isAuth && (
+              <button
+                className={`btn btn-sm ${liked ? "btn-outline-primary active" : "btn-outline-primary"} pull-xs-right`}
+                onClick={() => handleLike(comment)}
+              >
+                <i className="ion-heart"></i> <span className="counter">({likeCount})</span>
+              </button>
+            )}
             {isAuth && loggedUser.username === username && (
               <button
                 className="btn btn-sm btn-outline-secondary pull-xs-right"
