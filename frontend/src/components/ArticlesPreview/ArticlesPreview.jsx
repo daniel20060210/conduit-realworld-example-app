@@ -14,6 +14,10 @@ function ArticlesPreview({ articles, loading, updateArticles }) {
     updateArticles((prev) => ({ ...prev, articles: updatedArticles }));
   };
 
+  const handleImgError = (e) => {
+    e.target.style.display = "none";
+  };
+
   return articles?.length > 0 ? (
     articles.map((article) => {
       return (
@@ -32,6 +36,20 @@ function ArticlesPreview({ articles, loading, updateArticles }) {
             state={article}
             className="preview-link"
           >
+            {article.coverImage && (
+              <img
+                src={article.coverImage}
+                alt={article.title}
+                onError={handleImgError}
+                style={{
+                  height: "200px",
+                  width: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                  marginBottom: "1rem",
+                }}
+              />
+            )}
             <h1>{article.title}</h1>
             <p>{article.description}</p>
             <span>Read more...</span>

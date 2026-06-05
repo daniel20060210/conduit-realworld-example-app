@@ -11,7 +11,7 @@ import getArticle from "../../services/getArticle";
 function Article() {
   const { state } = useLocation();
   const [article, setArticle] = useState(state || {});
-  const { title, body, tagList, createdAt, author } = article || {};
+  const { title, body, tagList, createdAt, author, coverImage } = article || {};
   const { headers, isAuth } = useAuth();
   const navigate = useNavigate();
   const { slug } = useParams();
@@ -27,8 +27,25 @@ function Article() {
       });
   }, [isAuth, slug, headers, state, navigate]);
 
+  const handleImgError = (e) => {
+    e.target.style.display = "none";
+  };
+
   return (
     <div className="article-page">
+      {coverImage && (
+        <img
+          src={coverImage}
+          alt={title}
+          onError={handleImgError}
+          style={{
+            width: "100%",
+            height: "350px",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+      )}
       <BannerContainer>
         <h1>{title}</h1>
         <ArticleMeta author={author} createdAt={createdAt}>
